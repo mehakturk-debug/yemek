@@ -265,7 +265,8 @@ function vRange(){const s=S.sicak||{};let a=s.stm!=null?+s.stm:((+s.st)||0)*60,b
 function mTxt(m){return pad2(Math.floor(m/60))+":"+pad2(m%60)}
 function mParse(v){const x=/^(\d{1,2}):(\d{2})$/.exec(v||"");return x?(+x[1])*60+(+x[2]):null}
 function vOpen(){const r=vRange(),n=new Date(),m=n.getHours()*60+n.getMinutes();return n.getDay()==5&&m>=r[0]&&m<r[1]}
-function vOn(){return vOpen()||!!window._qrForce}
+function vEnded(){const n=new Date(),m=n.getHours()*60+n.getMinutes();return n.getDay()==6||(n.getDay()==5&&m>=vRange()[1])}
+function vOn(){return vOpen()||(!!window._qrForce&&!vEnded())}
 function tally(){const m={};VC.forEach(t=>{m[t]=(m[t]||0)+1});return m}
 function hotWin(dd,y,m){const x=new Date(y||2026,(m||1)-1,dd),k=dkey(x);if(x.getDay()!=6)return"";const dn=S.sicak&&S.sicak.done,pw=dn&&dn.k===k?dn.w:"";if(VW.k!==k)return pw;const nw=new Date(),tk=dkey(nw);if(k>tk){const f=new Date(x.getFullYear(),x.getMonth(),x.getDate()-1);if(dkey(f)!==tk||nw.getHours()*60+nw.getMinutes()<vRange()[1])return""}const c=tally(),o=vOpts(),all=o.concat(Object.keys(c).filter(t=>!o.includes(t)));let b="",bc=0;all.forEach(t=>{if((c[t]||0)>bc){bc=c[t];b=t}});return b||pw}
 function tvBrk(dd,y,m){const s=dd<=tvLen()?cell(dd,"k"):"",w=hotWin(dd,y,m);if(!w)return s;const base=dd<=15?dd:((dd-1)%15)+1,hp=S.hotPrev&&S.hotPrev[base];let a=String(s).split(", ").filter(Boolean);if(hp&&hp!==w)a=a.filter(x=>x!==hp);if(!a.includes(w))a.push(w);return a.join(", ")}
