@@ -2,6 +2,7 @@
 <html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Yemek Çizelgesi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f4f1ea;--card:#fff;--tx:#1f2a24;--ac:#1b5e45;--ac2:#e8f1ec;--bd:#d9d4c7;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161b18;--card:#1f2622;--tx:#e8ece9;--ac:#5fc79b;--ac2:#243029;--bd:#35423a}}
@@ -62,13 +63,60 @@ body.tvonly .wrap,body.tvonly #ls,body.tvonly .tvc .tvx{display:none!important}
 body.voteonly .wrap,body.voteonly #ls,body.voteonly #tv{display:none!important}
 #vt{display:none;position:fixed;inset:0;z-index:300;background:var(--bg);overflow:auto;padding:20px;justify-content:center}.vtb{max-width:520px;width:100%;margin:auto}.vth{text-align:center;margin-bottom:14px}.vth h1{font-size:26px;margin:6px 0}.vto{display:block;width:100%;text-align:left;padding:16px;font-size:18px;margin:8px 0;border-radius:12px}.vto.on{background:var(--ac);color:#fff}
 @media print{#vt,.mq{display:none!important}}
+/* ===== TV NEON TEMA ===== */
+#tv{--ink:#05040f;--cy:#25f4ff;--mg:#ff3fe0;--gr:#62ffa6;--am:#ffb42e;--vi:#a98bff;--tx2:#eaf7ff;--f:'Baloo 2','Trebuchet MS','Segoe UI',system-ui,sans-serif;
+background:radial-gradient(60vw 45vh at 8% 0%,rgba(255,63,224,.20),transparent 70%),radial-gradient(60vw 50vh at 100% 100%,rgba(37,244,255,.17),transparent 70%),radial-gradient(40vw 30vh at 100% 0%,rgba(169,139,255,.12),transparent 70%),var(--ink);color:var(--tx2);font-family:var(--f)}
+#tv::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.2px);background-size:2.2vh 2.2vh;pointer-events:none;-webkit-mask-image:linear-gradient(#000,transparent 85%);mask-image:linear-gradient(#000,transparent 85%)}
+#tv>*{position:relative}
+#tv .tvc{position:absolute}#tv .tvc button{white-space:nowrap;padding-inline:.9em;background:rgba(5,4,15,.7);color:var(--cy);border:1px solid rgba(37,244,255,.5);font-family:var(--f)}
+/* üst ayet şeridi */
+#tv .tvu{background:linear-gradient(180deg,rgba(255,180,46,.09),rgba(255,180,46,.02));border:2px solid var(--am);box-shadow:0 0 1.2vh rgba(255,180,46,.65),0 0 3.5vh rgba(255,180,46,.28),inset 0 0 2.5vh rgba(255,180,46,.16);border-radius:calc(var(--u)*1.4)}
+#tv .tvu .ar{color:#ffe6a8;font-family:'Amiri','Scheherazade New','Traditional Arabic','Noto Naskh Arabic',serif;text-shadow:0 0 .35em rgba(255,180,46,.95),0 0 1em rgba(255,180,46,.55)}
+#tv .tvu .trn{color:#ffd9a0;font-family:var(--f);font-weight:500;opacity:.95;letter-spacing:.02em;text-shadow:0 0 .6em rgba(255,180,46,.5)}
+#tv .tvu .sep{background:linear-gradient(transparent,var(--am),transparent);box-shadow:0 0 1vh var(--am);width:3px}
+/* başlık */
+#tv #tvy{font-family:var(--f);font-weight:800;letter-spacing:.04em;color:#fff;text-shadow:0 0 .12em #fff,0 0 .4em var(--cy),0 0 .9em var(--cy),0 0 1.8em rgba(37,244,255,.7)}
+#tv #tvd{font-family:var(--f);font-weight:600;color:#ffd0f7;text-shadow:0 0 .4em var(--mg),0 0 1em rgba(255,63,224,.8)}
+/* paneller */
+#tv .tvq{--c:var(--cy);position:relative;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01)),rgba(8,7,24,.82);border:2px solid var(--c);border-radius:calc(var(--u)*1.6);box-shadow:0 0 1vh color-mix(in srgb,var(--c) 85%,transparent),0 0 3.2vh color-mix(in srgb,var(--c) 38%,transparent),inset 0 0 2.4vh color-mix(in srgb,var(--c) 17%,transparent)}
+#tv .tvq.mk{--c:var(--am)}#tv .tvq.mo{--c:var(--cy)}#tv .tvq.tvqr{--c:var(--mg)}
+#tv .tvq h2{font-family:var(--f);font-weight:800;letter-spacing:.03em;color:#fff;text-shadow:0 0 .1em #fff,0 0 .45em var(--c),0 0 1.1em var(--c)}
+#tv .tvs{color:color-mix(in srgb,var(--c) 40%,#fff);opacity:.9;font-family:var(--f);font-weight:500}
+/* yemek kutuları */
+#tv .tvb{background:rgba(255,255,255,.04);border:2px solid color-mix(in srgb,var(--c,var(--cy)) 75%,transparent);border-radius:calc(var(--w,12vw)*.14);box-shadow:0 0 .8vh color-mix(in srgb,var(--c,var(--cy)) 55%,transparent),inset 0 0 1.2vh color-mix(in srgb,var(--c,var(--cy)) 22%,transparent)}
+#tv .tvq .tvb{--c:inherit}
+#tv .mk .tvb{border-color:rgba(255,180,46,.8);box-shadow:0 0 .8vh rgba(255,180,46,.5),inset 0 0 1.2vh rgba(255,180,46,.18)}
+#tv .mo .tvb{border-color:rgba(37,244,255,.8);box-shadow:0 0 .8vh rgba(37,244,255,.5),inset 0 0 1.2vh rgba(37,244,255,.18)}
+#tv .tvn{font-family:var(--f);font-weight:600;color:#fff;text-shadow:0 0 .5em rgba(255,255,255,.35)}
+#tv .tvi.win .tvb{border-color:var(--mg);box-shadow:0 0 1vh var(--mg),0 0 3vh rgba(255,63,224,.55),inset 0 0 1.4vh rgba(255,63,224,.3)}
+#tv .tvw{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(5,4,15,.92) 55%);color:#ffd0f7;font-family:var(--f);font-weight:800;font-size:calc(var(--w,12vw)*.125);text-align:center;padding:34% 3% 6%;text-shadow:0 0 .5em var(--mg),0 0 1em var(--mg);line-height:1.05}
+/* QR */
+#tv .tvqrb svg{border-radius:calc(var(--u)*1.2);box-shadow:0 0 1.2vh #fff,0 0 3.5vh var(--mg),0 0 7vh rgba(255,63,224,.55)}
+#tv .tvqch{font-family:var(--f);font-weight:600;background:rgba(255,63,224,.1);border:1px solid rgba(255,63,224,.65);box-shadow:0 0 .8vh rgba(255,63,224,.4);border-radius:99px;color:#fff}#tv .tvqch b{color:var(--mg);text-shadow:0 0 .5em var(--mg);font-size:1.15em}
+/* yarın şeridi */
+#tv .mq{background:rgba(8,7,24,.82);border:2px solid var(--gr);border-radius:calc(var(--u)*1.6);box-shadow:0 0 1vh rgba(98,255,166,.8),0 0 3.2vh rgba(98,255,166,.32),inset 0 0 2.4vh rgba(98,255,166,.15)}
+#tv .mqh{font-family:var(--f);font-weight:800;color:#fff;border-color:var(--gr);text-shadow:0 0 .4em var(--gr),0 0 1em var(--gr);letter-spacing:.03em}
+#tv .mqb{background:rgba(255,255,255,.04);border:2px solid rgba(98,255,166,.8);box-shadow:0 0 .7vh rgba(98,255,166,.5),inset 0 0 1vh rgba(98,255,166,.18);border-radius:1.4vh}
+#tv .mqn{font-family:var(--f);font-weight:600;color:#fff;text-shadow:0 0 .5em rgba(98,255,166,.45)}
+/* alt şerit */
+#tv .tvf>div{background:rgba(8,7,24,.82);border:2px solid var(--vi);border-radius:calc(var(--u)*1.6);box-shadow:0 0 1vh rgba(169,139,255,.75),0 0 3.2vh rgba(169,139,255,.3),inset 0 0 2.4vh rgba(169,139,255,.14)}
+#tv .tvf>.tvf3{border-color:var(--mg);box-shadow:0 0 1vh rgba(255,63,224,.85),0 0 3.2vh rgba(255,63,224,.4),inset 0 0 2.4vh rgba(255,63,224,.18)}
+#tv .tvft{font-family:var(--f);font-weight:800;color:#d9ccff;letter-spacing:.06em;text-shadow:0 0 .5em var(--vi),0 0 1em var(--vi)}
+#tv .tvfx{font-family:var(--f);font-weight:600;color:#fff;text-shadow:0 0 .6em rgba(169,139,255,.55)}
+#tv .tvfs{font-family:var(--f);color:#cdbfff;opacity:.85}
+#tv .tvf3{font-family:var(--f);font-weight:800;color:#fff;text-shadow:0 0 .1em #fff,0 0 .4em var(--mg),0 0 1em var(--mg),0 0 1.8em rgba(255,63,224,.7)}
+/* tek vurgu: oylama panelinin nefes alan ışığı */
+#tv .tvq.tvqr::after{content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;box-shadow:0 0 2.2vh var(--mg),0 0 6vh rgba(255,63,224,.7);opacity:.15;animation:nb 3.2s ease-in-out infinite}
+@keyframes nb{50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){#tv .tvq.tvqr::after{animation:none;opacity:.6}.mqt{animation-play-state:paused}}
+
 </style></head><body>
 <div id="ls"><div class="lsb"><h1>🍽️ Yemek Çizelgesi</h1><div class="hint">Nasıl devam etmek istersiniz?</div><div class="lsr"><button type="button" class="pri" onclick="goTv()">📺 TV Modu<small>Sadece günün menüsü ekranda görünür</small></button><button type="button" onclick="goIn()">✍️ Veri Girişi<small>Menüyü görüntüleyin ve düzenleyin</small></button></div></div></div>
 <div class="wrap">
 <div class="no"><h1>🍽️ Yemek Çizelgesi Hazırlama</h1>
 <div class="hint">Önce bilgileri ve ilk 15 günün menüsünü girin. 16. günden ay sonuna kadar olan liste otomatik doldurulur.</div>
 <div class="tabs"><button id="t1" class="on" onclick="show('in')">1) Veri Girişi</button><button id="t2" onclick="show('pv')">2) Önizleme / Yazdır</button><button id="t3" onclick="show('pr')">3) Ürünler</button><button id="t4" onclick="show('wk')">4) Haftalık Malzeme</button><button id="t5" onclick="openTv()">📺 TV Modu</button><button class="pri" onclick="show('pv');setTimeout(()=>print(),200)">🖨️ Yazdır (2 sayfa)</button></div></div>
- 
+
 <div id="in">
 <div class="card"><div class="grid">
 <div><label>Yurt Adı</label><input id="yurt" placeholder="Örn: Özel Yazıcızade Ortaöğretim Erkek Öğrenci Pansiyonu"></div>
@@ -86,9 +134,9 @@ body.voteonly .wrap,body.voteonly #ls,body.voteonly #tv{display:none!important}
 <div id="sa" style="margin-top:8px"><button type="button" class="pri" id="sl">🔑 Google ile yönetici girişi</button></div>
 <div id="sb" style="display:none;margin-top:8px"><div class="hint">Giriş yapan yönetici: <b id="su"></b></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button type="button" onclick="syPush()">⬆ Bu cihazdaki menüyü herkese gönder</button><button type="button" onclick="syPull()">⬇ Buluttaki menüyü getir</button><button type="button" id="so">Çıkış yap</button></div></div>
 <div class="hint" style="margin-top:6px">TV'de doğrudan TV modunda açılan adres: <b id="tvl"></b></div><div id="sm" class="hint" style="display:none;margin-top:6px;color:var(--ac);font-weight:600"></div></div>
- 
- 
- 
+
+
+
 <div class="card" id="gc"><b style="font-family:system-ui">Yemek Görselleri</b><div class="hint">Görselleri GitHub'a yüklediğiniz klasörün adresini yazın. Görselleri sayfayla aynı klasöre yüklediyseniz bu kutuyu boş bırakın; "gorseller" gibi bir alt klasöre yüklediyseniz adını yazın (örn. gorseller/). Sistem ikisini de otomatik dener. Dosya adı ürün adıyla aynıysa görsel otomatik gelir.</div><div style="margin-top:8px"><label>Görsel klasörü adresi</label><input id="ib" placeholder="Boş bırakın (aynı klasör) veya gorseller/"></div><label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-size:13px"><input type="checkbox" id="si" style="width:auto"> Önizleme ve çıktıda görselleri göster (bu durumda hücreler elle düzenlenemez)</label><div style="margin-top:8px"><button type="button" onclick="imgCheck()">🔍 Görsel testi</button><button type="button" onclick="renderGx()" style="margin-left:6px">🖼️ Görselleri eşleştir</button></div><div class="hint" id="gm" style="margin-top:6px"></div><div id="gx"></div></div>
 <div class="card" id="sx"></div>
 <div class="card" id="tpl"></div>
@@ -98,7 +146,7 @@ body.voteonly .wrap,body.voteonly #ls,body.voteonly #tv{display:none!important}
 <div id="days"></div>
 <div style="margin-top:12px"><button onclick="clearAll(this)">Tüm verileri temizle</button></div></div>
 </div>
- 
+
 <div id="pr"><div class="card"><b style="font-family:system-ui">Yeni Ürün Ekle</b>
 <div class="hint">Eklenen ürün tüm menü kutularında (kahvaltı, öğle ve akşam aynı listeyi kullanır) öneri olarak çıkar. Menü kutusuna listede olmayan bir ürün yazarsanız o da otomatik buraya eklenir.</div>
 <div class="grid" style="margin-top:10px"><div><label>Kategori</label><select id="nc"></select></div><div><label>Alt kategori (isteğe bağlı)</label><input id="na" placeholder="Eklenenler"></div><div><label>Ürün adı</label><input id="nn" onkeydown="if(event.key=='Enter')addProduct()"></div><div style="align-self:end"><button class="pri" onclick="addProduct()">Ekle</button></div></div></div>
@@ -107,7 +155,7 @@ body.voteonly .wrap,body.voteonly #ls,body.voteonly #tv{display:none!important}
 <div class="grid" style="margin-top:10px"><div><label>Hafta</label><select id="ww" onchange="S.wsel=+this.value;save();showWk()"></select></div><div><label>Öğrenci sayısı</label><input id="wc" type="number" min="1" oninput="S.cnt=+this.value;save()"></div><div style="align-self:end;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="pri" onclick="makeWk()">🤖 Malzeme listesini hazırla</button><button type="button" onclick="printWk()">🖨️ Yazdır</button></div></div><div id="wm" class="hint" style="display:none;margin-top:8px;color:var(--ac);font-weight:600"></div></div><div id="wr"></div></div>
 <div id="pv"><div id="s1"></div><div id="s2"></div></div>
 </div>
-<div id="tv"><div class="tvc"><button onclick="tvNav(-1)">◀ Önceki</button><button onclick="tvToday()">Bugün</button><button onclick="tvNav(1)">Sonraki ▶</button><button onclick="tvFs()">⛶ Tam ekran</button><button class="tvx" onclick="closeTv()">✕ Kapat</button></div><div class="tvu"><div><div class="ar">أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</div><div class="trn">Eûzü billâhi mineşşeytânirracîm</div></div><div class="sep"></div><div><div class="ar">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div><div class="trn">Bismillâhirrahmânirrahîm</div></div></div><div class="tvh"><div id="tvy"></div><div id="tvd"></div></div><div class="tvp" id="tvp"></div><div class="mq" id="tvm"></div><div class="tvf"><div class="tvf2" id="tvt"></div><div class="tvf3">🤲 Afiyet olsun</div></div></div>
+<div id="tv"><div class="tvc"><button onclick="tvNav(-1)">◀ Önceki</button><button onclick="tvToday()">Bugün</button><button onclick="tvNav(1)">Sonraki ▶</button><button onclick="tvFs()">⛶ Tam ekran</button><button class="tvx" onclick="closeTv()">✕ Kapat</button></div><div class="tvu"><div><div class="ar">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div><div class="trn">Bismillâhirrahmânirrahîm</div></div><div class="sep"></div><div><div class="ar">أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</div><div class="trn">Eûzü billâhi mineşşeytânirracîm</div></div></div><div class="tvh"><div id="tvy"></div><div id="tvd"></div></div><div class="tvp" id="tvp"></div><div class="mq" id="tvm"></div><div class="tvf"><div class="tvf2" id="tvt"></div><div class="tvf3">🤲 Afiyet olsun</div></div></div>
 <div id="dl"></div>
 <div id="vt"><div class="vtb" id="vtb"></div></div>
 <script>/* qrcode-generator (c) Kazuhiko Arase, MIT license */
@@ -190,7 +238,7 @@ function distPool(k,mode){const it=S.pool[k]||[];if(!it.length){pmsg("Önce bu k
 let tvDay=1,tvAuto=true;
 function tvLen(){const[y,m]=(S.meta.ay||"").split("-").map(Number);return y?new Date(y,m,0).getDate():30}
 function tvTodayD(){const n=new Date(),[y,m]=(S.meta.ay||"").split("-").map(Number);return(n.getFullYear()==y&&n.getMonth()+1==m)?n.getDate():1}
-function tvItem(x){const f=imgFile(x);return `<div class="tvi"><div class="tvb"><span>🍽️</span>${f?imgTag(x,"position:absolute;inset:0;width:100%;height:100%;object-fit:cover"):""}</div><div class="tvn">${esc(x)}</div></div>`}
+function tvItem(x,win){const f=imgFile(x);return `<div class="tvi${win?" win":""}"><div class="tvb"><span>🍽️</span>${f?imgTag(x,"position:absolute;inset:0;width:100%;height:100%;object-fit:cover"):""}${win?'<div class="tvw">🔥 Oylamayla seçildi</div>':""}</div><div class="tvn">${esc(x)}</div></div>`}
 let tvLast="";
 const TVT=[
 ["Yemeğe “Bismillah” diyerek başlanır. Başlarken unutulursa hatırlandığında “Bismillâhi evvelehû ve âhirehû” denir.","Ebû Dâvûd, Tirmizî"],
@@ -225,15 +273,16 @@ function tvQc(){const e=$("tvqc");if(!e)return;const c=tally(),o=vOpts();e.inner
 function mqSet(dd,lab,k){const s=dd<=tvLen()?cell(dd,k):"",a=String(s).split(", ").filter(Boolean);if(!a.length)return"";return `<div class="mqh">${lab}</div>`+a.map(x=>{const f=imgFile(x);return `<div class="mqi"><div class="mqb"><span>🍽️</span>${f?imgTag(x,"position:absolute;inset:0;width:100%;height:100%;object-fit:cover").replace(' loading="lazy"',""):""}</div><div class="mqn">${esc(x)}</div></div>`}).join("")}
 function tvState(){if(!tvAuto)return "m"+tvDay;return new Date().getHours()<8?"a":"b"}
 function tvKey(){return tvState()+"|"+tvTodayD()+"|"+(tvAuto&&vOn()?1:0)}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if($("tv").style.display=="flex")tvFit()});
 function renderTv(){const[y,m]=(S.meta.ay||"").split("-").map(Number),st=tvState(),qr=tvAuto&&vOn();tvLast=tvKey();const d0=tvAuto?tvTodayD():tvDay,n=tvLen(),
 dt=dd=>new Date(y||2026,(m||1)-1,dd),lb=dd=>{const x=dt(dd);return pad2(x.getDate())+" "+(AYLAR[x.getMonth()]||"")+" "+GUN[x.getDay()]},
-pn=(t,dd,k)=>{const s=k=="k"?tvBrk(dd,y,m):(dd<=n?cell(dd,k):""),w=k=="k"&&hotWin(dd,y,m);return `<div class="tvq"><h2>${t}</h2><div class="tvs">${lb(dd)}${w?" • 🔥 Sıcak menü öğrenci oylamasıyla seçildi":""}</div><div class="tvl">${String(s||"").split(", ").filter(Boolean).map(tvItem).join("")||'<div style="opacity:.5;font-size:2vw">Menü girilmedi</div>'}</div></div>`};
+pn=(t,dd,k)=>{const s=k=="k"?tvBrk(dd,y,m):(dd<=n?cell(dd,k):""),w=k=="k"&&hotWin(dd,y,m);return `<div class="tvq ${k=="k"?"mk":"mo"}"><h2>${t}</h2><div class="tvs">${lb(dd)}${w?" • öğrencilerin seçtiği sıcak menü eklendi":""}</div><div class="tvl">${String(s||"").split(", ").filter(Boolean).map(x=>tvItem(x,w&&x===w)).join("")||'<div style="opacity:.5;font-size:2vw">Menü girilmedi</div>'}</div></div>`};
 $("tvy").textContent=(S.meta.yurt||"YURT ADI").toUpperCase();const d=dt(d0);$("tvd").textContent=pad2(d.getDate())+" "+(AYLAR[d.getMonth()]||"")+" "+d.getFullYear()+" • "+GUN[d.getDay()];
 let body,cls="tvp";if(st=="b"){body=pn("BUGÜN • ÖĞLE VE AKŞAM YEMEĞİ",d0,"o");if(qr){body+=tvQrPanel();cls+=" qr"}else cls+=" one"}else body=pn("BUGÜN • KAHVALTI",d0,"k")+pn("BUGÜN • ÖĞLE VE AKŞAM YEMEĞİ",d0,"o");
 const set=mqSet(d0+1,"YARIN<br>KAHVALTI","k")+mqSet(d0+1,"YARIN<br>ÖĞLE VE AKŞAM","o")||'<div class="mqh" style="border:0">Yarının menüsü girilmedi</div>';
 $("tvp").className=cls;$("tvp").innerHTML=body;$("tvm").innerHTML=`<div class="mqt" id="mqt"><div class="mqs">${set}</div></div>`;tvQc();tvTip();tvFit()}
 function tvMq(){const t=$("mqt");if(!t)return;const s0=t.firstElementChild,W=t.parentElement.clientWidth,w=s0.offsetWidth;if(!w||!W)return;while(t.children.length>1)t.lastElementChild.remove();const c=Math.ceil(W/w)+1;for(let i=1;i<c;i++)t.appendChild(s0.cloneNode(true));t.style.setProperty("--mw",w+"px");t.style.animationDuration=Math.max(15,w/(window.innerWidth*.05))+"s"}
-function tvQrFit(){const q=document.querySelector("#tvp .tvqrb");if(!q)return;const sv=q.querySelector("svg");if(!sv)return;sv.removeAttribute("width");sv.removeAttribute("height");const W=q.clientWidth,H=q.clientHeight,z=Math.max(110,Math.floor(Math.min(W||999,H||window.innerHeight*.3)));sv.style.width=z+"px";sv.style.height=z+"px"}
+function tvQrFit(){const q=document.querySelector("#tvp .tvqrb");if(!q)return;if(!q._ro&&window.ResizeObserver){q._ro=new ResizeObserver(()=>tvQrFit());q._ro.observe(q)}const sv=q.querySelector("svg");if(!sv)return;sv.removeAttribute("width");sv.removeAttribute("height");const W=q.clientWidth,H=q.clientHeight,z=Math.max(110,Math.floor(Math.min(W||999,H||window.innerHeight*.3)));sv.style.width=z+"px";sv.style.height=z+"px"}
 function tvFit(){tvMq();tvQrFit();document.querySelectorAll("#tvp .tvl").forEach(el=>{const n=el.children.length,W=el.clientWidth,H=el.clientHeight;if(!n||!W||!H)return;const g=Math.max(8,W*.02);let best=30;for(let c=1;c<=n;c++){const r=Math.ceil(n/c);const w=Math.min((W-(c-1)*g)/c,((H-(r-1)*g)/r)/1.5);if(w>best)best=w}best=Math.min(best,H*.7);el.style.setProperty("--w",Math.floor(best)+"px");el.style.gap=g+"px"})}
 window.addEventListener("resize",()=>{if($("tv").style.display=="flex")tvFit()});
 function openTv(){tvAuto=true;tvDay=tvTodayD();$("tv").style.display="flex";renderTv();tvFs()}
