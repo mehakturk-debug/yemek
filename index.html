@@ -431,29 +431,67 @@ function txt(d,m){if(m=="a")m="o";const a=(S.days[d]&&S.days[d][m])||[];return a
 function srcTxt(d,m){if(d<=15)return txt(d,m);let b=((d-1)%15)+1;for(let i=0;i<15;i++){const t=txt(b,m);if(t)return t;b=b>1?b-1:15}return""}
 function cell(d,m){const o=S.ov[d]&&S.ov[d][m];if(o)return o;return srcTxt(d,m)}
 
-/* ===== NFC SESLİ MENÜ (ElevenLabs) ===== */
-const XI_KEY="sk_7c2611315381fd2da8f8ef5fff2ebcf549bb3561d30c4ab7";
-const XI="https://api.elevenlabs.io/v1";
+/* ===== NFC SESLİ MENÜ — sesler bir kez ElevenLabs'te üretilir, GitHub'daki audio/ klasöründen çalınır ===== */
+const XI="https://api.elevenlabs.io/v1",XI_MODEL="eleven_multilingual_v2",AUDIO_BASE="audio/";
+const OG={k:"kahvaltı",o:"öğle",a:"akşam"};
+function xiKey(){try{return localStorage.getItem("xi_key")||""}catch(e){return""}}
 function ttsCfg(){if(!S.tts)S.tts={voice:"",voiceName:"",greet:"Sezer abi, selamün aleyküm. Bugün {ogun} menüsünde şunlar var:"};if(!S.tts.greet)S.tts.greet="Sezer abi, selamün aleyküm. Bugün {ogun} menüsünde şunlar var:";return S.tts}
 function vxMsg(t){const m=$("vxm");if(m){m.textContent=t;m.style.display="block"}}
-function renderVx(){const t=ttsCfg(),u=location.href.split("?")[0].split("#")[0];$("vx").innerHTML=`<b style="font-family:system-ui">🔊 NFC Sesli Menü (ElevenLabs)</b><div class="hint">NFC etiketine şu adresi yazın: <b>${esc(u)}?nfc=1</b><br>Etiket okutulunca Sabah / Öğle / Akşam seçenekleri çıkar, dokunulan öğünün menüsü seçtiğiniz sesle okunur. Tek öğünlük etiket için: <b>?nfc=1&amp;ogun=k</b> (kahvaltı), <b>o</b> (öğle), <b>a</b> (akşam).</div>
+const TRM={"ç":"c","ğ":"g","ı":"i","ö":"o","ş":"s","ü":"u","â":"a","î":"i","û":"u"};
+function slug(x){return String(x).toLocaleLowerCase("tr").replace(/[çğıöşüâîû]/g,c=>TRM[c]).replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40)||"ses"}
+function h6(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36).padStart(6,"0").slice(-6)}
+/* dosya adı = okunan metin + (ses+metin) özeti: metin ya da ses değişirse yeni dosya sayılır */
+function clipOf(text,voice){return{text,file:slug(text)+"-"+h6(voice+"|"+text)+".mp3"}}
+function listTr(a){return a.length>1?a.slice(0,-1).join(", ")+" ve "+a[a.length-1]:(a[0]||"")}
+function dayItems(m,d,y,mo){const s=m=="k"?tvBrk(d,y,mo):cell(d,"o");return String(s||"").split(", ").map(x=>x.trim()).filter(Boolean)}
+function nfcItems(m){const d=tvTodayD(),[y,mo]=(S.meta.ay||"").split("-").map(Number);return dayItems(m,d,y,mo)}
+function spk(x){return x.replace(/Z\.Y\./g,"Zeytinyağlı").replace(/\s*\([^)]*\)/g,"")}
+function mealClips(m,items,full){const v=ttsCfg().voice||"",a=items.map(spk).filter(Boolean);if(!a.length)return full?[]:[clipOf("Bugün "+OG[m]+" için menü girilmemiş.",v)];return[clipOf(ttsCfg().greet.replace("{ogun}",OG[m]),v),...a.map(x=>clipOf(x,v)),clipOf("Afiyet olsun.",v)]}
+function monthClips(){const [y,mo]=(S.meta.ay||"").split("-").map(Number);if(!y)return[];const n=tvLen(),M=new Map();for(let d=1;d<=n;d++)for(const m of["k","o","a"]){try{mealClips(m,dayItems(m=="a"?"o":m,d,y,mo),true).forEach(c=>M.has(c.file)||M.set(c.file,c))}catch(e){}}return[...M.values()]}
+/* ---- yönetici paneli ---- */
+function renderVx(){const t=ttsCfg(),u=location.href.split("?")[0].split("#")[0];$("vx").innerHTML=`<b style="font-family:system-ui">🔊 NFC Sesli Menü (ElevenLabs)</b><div class="hint">NFC etiketine şu adresi yazın: <b>${esc(u)}?nfc=1</b><br>Etiket okutulunca Sabah / Öğle / Akşam seçenekleri çıkar. Sesler GitHub'daki <b>audio/</b> klasöründen çalınır; ElevenLabs kredisi sadece yeni ürün/cümle için, yönetici panelinden üretirken harcanır. Tek öğünlük etiket için: <b>?nfc=1&amp;ogun=k</b> (kahvaltı), <b>o</b> (öğle), <b>a</b> (akşam).</div>
+<div style="margin-top:8px"><label>ElevenLabs API anahtarı (sadece bu cihazda saklanır, sayfaya/GitHub'a yazılmaz)</label><input id="vxk" type="password" autocomplete="off" placeholder="sk_..." value="${esc(xiKey())}"></div>
 <div class="grid" style="margin-top:8px"><div><label>Seslendirecek kişi</label><select id="vxv"><option value="${esc(t.voice)}">${esc(t.voiceName||"— seçilmedi —")}</option></select></div><div style="align-self:end"><button type="button" onclick="vxLoad()">Sesleri getir</button></div></div>
 <div style="margin-top:8px"><label>Karşılama cümlesi ({ogun} yerine kahvaltı / öğle / akşam yazılır)</label><input id="vxg" value="${esc(t.greet)}"></div>
-<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="pri" onclick="nfcSpeak('k')">▶ Kahvaltıyı dene</button><button type="button" class="pri" onclick="nfcSpeak('o')">▶ Öğle/akşamı dene</button></div><div id="vxm" class="hint" style="display:none;margin-top:6px;color:var(--ac);font-weight:600"></div>`}
-$("vx").oninput=e=>{if(e.target.id=="vxg"){ttsCfg().greet=e.target.value;save()}};
+<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="pri" onclick="nfcSpeak('k')">▶ Kahvaltıyı dene</button><button type="button" class="pri" onclick="nfcSpeak('o')">▶ Öğle/akşamı dene</button></div>
+<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd,#ddd)"><b style="font-family:system-ui">📦 Ses dosyaları (GitHub)</b><div class="hint">1) Eksikleri kontrol et → 2) Eksikleri üret: sesler otomatik olarak GitHub'daki <b>audio/</b> klasörüne yüklenir. Daha önce üretilenler tekrar üretilmez.<br>GitHub token: GitHub → Settings → Developer settings → Fine-grained tokens → sadece bu repo → <b>Contents: Read and write</b>. Token yalnızca bu cihazın tarayıcısında saklanır. Boş bırakırsanız ZIP indirme yedeği çalışır.</div>
+<div class="grid" style="margin-top:6px"><div><label>GitHub repo (kullanici/repo)</label><input id="vxgr" placeholder="kullanici/repo" value="${esc(ghCfg().repo||"")}"></div><div><label>Branch</label><input id="vxgb" value="${esc(ghCfg().branch)}"></div></div>
+<div style="margin-top:6px"><label>GitHub token</label><input id="vxgt" type="password" autocomplete="off" placeholder="github_pat_..." value="${esc(ghCfg().token||"")}"></div>
+<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><button type="button" onclick="vxScan()">🔍 Eksikleri kontrol et</button></div><div id="vxr" style="margin-top:8px"></div></div>
+<div id="vxm" class="hint" style="display:none;margin-top:6px;color:var(--ac);font-weight:600"></div>`;vxShow()}
+$("vx").oninput=e=>{if(e.target.id=="vxg"){ttsCfg().greet=e.target.value;save()}else if(e.target.id=="vxk"){try{localStorage.setItem("xi_key",e.target.value.trim())}catch(x){}}else if(/^vxg[rbt]$/.test(e.target.id))ghSave()};
 $("vx").onchange=e=>{if(e.target.id=="vxv"){const t=ttsCfg(),o=e.target.selectedOptions[0];t.voice=o.value;t.voiceName=o.value?o.textContent:"";save()}};
-async function vxLoad(){const t=ttsCfg();vxMsg("Sesler getiriliyor...");try{const r=await fetch(XI+"/voices",{headers:{"xi-api-key":XI_KEY}});if(!r.ok)throw r.status;const j=await r.json(),a=(j.voices||[]).map(v=>({id:v.voice_id,name:v.name+(v.labels&&v.labels.gender?" ("+v.labels.gender+")":"")}));$("vxv").innerHTML='<option value="">— seçin —</option>'+a.map(v=>`<option value="${esc(v.id)}"${v.id==t.voice?" selected":""}>${esc(v.name)}</option>`).join("");vxMsg("✔ "+a.length+" ses bulundu, listeden seçin.")}catch(e){vxMsg(e==401||e==403?"Ses listesi alınamadı: API anahtarının 'voices' okuma izni olmayabilir. Anahtar ayarlarında Voices iznini açın.":"Sesler alınamadı, internet bağlantısını ve API anahtarını kontrol edin.")}}
-const TTSC=new Map(),SIL="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";let TTSA=null;
-function listTr(a){return a.length>1?a.slice(0,-1).join(", ")+" ve "+a[a.length-1]:(a[0]||"")}
-function nfcItems(m){const d=tvTodayD(),[y,mo]=(S.meta.ay||"").split("-").map(Number),s=m=="k"?tvBrk(d,y,mo):cell(d,"o");return String(s||"").split(", ").map(x=>x.trim()).filter(Boolean)}
-function spk(x){return x.replace(/Z\.Y\./g,"Zeytinyağlı").replace(/\s*\([^)]*\)/g,"")}
-function nfcText(m){const t=ttsCfg(),a=nfcItems(m).map(spk),og={k:"kahvaltı",o:"öğle",a:"akşam"}[m];if(!a.length)return "Bugün "+og+" için menü girilmemiş.";return t.greet.replace("{ogun}",og)+" "+listTr(a)+". Afiyet olsun."}
-async function nfcSpeak(m){const t=ttsCfg(),st=$("nxs")||$("vxm");const say=x=>{if(st){st.textContent=x;st.style.display="block"}};
-if(!t.voice)return say("Ses seçilmemiş. Yönetici panelinden 'Sesleri getir' deyip bir ses seçin.");
+async function vxLoad(){const t=ttsCfg();if(!xiKey())return vxMsg("Önce ElevenLabs API anahtarını girin.");vxMsg("Sesler getiriliyor...");try{const r=await fetch(XI+"/voices",{headers:{"xi-api-key":xiKey()}});if(!r.ok)throw r.status;const j=await r.json(),a=(j.voices||[]).map(v=>({id:v.voice_id,name:v.name+(v.labels&&v.labels.gender?" ("+v.labels.gender+")":"")}));$("vxv").innerHTML='<option value="">— seçin —</option>'+a.map(v=>`<option value="${esc(v.id)}"${v.id==t.voice?" selected":""}>${esc(v.name)}</option>`).join("");vxMsg("✔ "+a.length+" ses bulundu, listeden seçin.")}catch(e){vxMsg(e==401||e==403?"Ses listesi alınamadı: API anahtarı geçersiz ya da 'voices' okuma izni yok.":"Sesler alınamadı, internet bağlantısını ve API anahtarını kontrol edin.")}}
+let VXM=[],VXG=[],VXN=0,VXBUSY=0;
+function ghCfg(){let c={};try{c=JSON.parse(localStorage.getItem("gh_cfg")||"{}")}catch(e){}if(!c.repo){const h=location.hostname;if(/\.github\.io$/.test(h)){const o=h.split(".")[0],p=location.pathname.split("/")[1];c.repo=o+"/"+(p&&!/\.html?$/.test(p)?p:h)}}c.branch=c.branch||"main";return c}
+function ghSave(){const c={repo:($("vxgr")||{}).value||"",branch:(($("vxgb")||{}).value||"main").trim(),token:(($("vxgt")||{}).value||"").trim()};c.repo=c.repo.trim();try{localStorage.setItem("gh_cfg",JSON.stringify(c))}catch(e){}}
+function b64(b){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result.split(",")[1]);r.onerror=no;r.readAsDataURL(b)})}
+async function ghPut(file,blob){const g=ghCfg(),r=await fetch("https://api.github.com/repos/"+g.repo+"/contents/audio/"+encodeURIComponent(file),{method:"PUT",headers:{Authorization:"Bearer "+g.token,Accept:"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"ses: "+file,content:await b64(blob),branch:g.branch})});if(r.ok||r.status==422)return true;throw r.status}
+function dl(b,n){const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();a.remove()}
+async function clipExists(c){try{const r=await fetch(AUDIO_BASE+c.file,{method:"HEAD",cache:"no-store"});return r.ok&&!/text\/html/.test(r.headers.get("content-type")||"")}catch(e){return false}}
+async function vxScan(){if(VXBUSY)return;const o=$("vxr");const cl=monthClips();if(!cl.length){o.innerHTML="Bu ay için menü bulunamadı.";return}VXBUSY=1;VXG=[];VXM=[];VXN=cl.length;o.textContent="Kontrol ediliyor ("+cl.length+" ses)...";for(let i=0;i<cl.length;i+=8){const b=cl.slice(i,i+8),r=await Promise.all(b.map(clipExists));b.forEach((c,j)=>r[j]||VXM.push(c))}VXBUSY=0;vxShow()}
+function vxShow(){const o=$("vxr");if(!o||!VXN)return;let h="";const pend=VXG.filter(g=>!g.up),up=VXG.length-pend.length;
+if(up)h+=`<div><b>✔ ${up} ses GitHub'a yüklendi.</b> GitHub Pages'in yayına alması 1-2 dk sürer; sonra "Eksikleri kontrol et" ile doğrulayabilirsiniz.</div>`;
+if(pend.length)h+=`<div><b>${pend.length} ses üretildi ama GitHub'a yüklenmedi.</b> ZIP'i indirip içindekileri GitHub'da <b>audio/</b> klasörüne yükleyin.</div><div style="margin-top:6px"><button type="button" class="pri" onclick="vxZip()">⬇ ZIP indir (${pend.length} dosya)</button></div><div class="hint" style="margin-top:6px">ZIP açılmazsa tek tek: ${pend.map(g=>`<a href="#" onclick="dl(VXG[${VXG.indexOf(g)}].blob,VXG[${VXG.indexOf(g)}].file);return false">${esc(g.file)}</a>`).join(" · ")}</div>`;
+const left=VXM.filter(c=>!VXG.some(g=>g.file==c.file));if(!left.length&&!VXG.length)h+=`<div>✔ ${VXN} ses dosyasının hepsi GitHub'da hazır, kredi harcanmayacak.</div>`;
+if(left.length){const ch=left.reduce((s,c)=>s+c.text.length,0);h+=`<div>${VXN} ses gerekli, <b>${VXN-VXM.length} hazır</b>, <b>${left.length} eksik</b> (≈ ${ch} karakter = yaklaşık ${ch} kredi).</div><div class="hint" style="margin-top:4px">${left.map(c=>esc(c.text)).join(" · ")}</div><div style="margin-top:6px"><button type="button" class="pri" onclick="vxGen()">🎙 Eksikleri üret ve GitHub'a yükle</button></div>`}o.innerHTML=h}
+async function vxGen(){if(VXBUSY)return;const k=xiKey(),t=ttsCfg(),g=ghCfg(),auto=!!(g.token&&g.repo);if(!k)return vxMsg("Önce ElevenLabs API anahtarını girin.");if(!t.voice)return vxMsg("Önce bir ses seçin.");VXBUSY=1;const todo=VXM.filter(c=>!VXG.some(x=>x.file==c.file));let n=0,err="";
+for(const c of todo){n++;vxMsg("Üretiliyor "+n+"/"+todo.length+": "+c.text);let b;
+try{const r=await fetch(XI+"/text-to-speech/"+encodeURIComponent(t.voice)+"?output_format=mp3_44100_64",{method:"POST",headers:{"xi-api-key":k,"content-type":"application/json"},body:JSON.stringify({text:c.text,model_id:XI_MODEL})});if(!r.ok)throw r.status;b=await r.blob()}catch(e){err="ElevenLabs durdu: "+(e==401?"API anahtarı geçersiz":e==402||e==429?"kota dolmuş olabilir":"hata "+e)+". Üretilenler korundu, sonra devam edebilirsiniz.";break}
+const it={file:c.file,blob:b,up:false};VXG.push(it);BLOB.set(c.file,URL.createObjectURL(b));
+if(auto){vxMsg("GitHub'a yükleniyor "+n+"/"+todo.length+": "+c.text);try{await ghPut(c.file,b);it.up=true}catch(e){err="GitHub'a yüklenemedi ("+(e==401||e==403?"token geçersiz ya da yazma izni yok":e==404?"repo/branch bulunamadı":"hata "+e)+"). Üretilen ses korundu, ZIP ile yükleyebilirsiniz.";break}}}
+VXBUSY=0;vxMsg(err||(auto?"✔ Bitti. Sesler GitHub'a yüklendi; yayına girmesi 1-2 dk sürer.":"✔ Bitti. GitHub bilgisi girilmediği için ZIP'i indirip audio/ klasörüne yükleyin."));vxShow()}
+async function vxZip(){try{if(!window.JSZip)await new Promise((ok,no)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";s.onload=ok;s.onerror=no;document.head.appendChild(s)});const z=new JSZip();VXG.filter(g=>!g.up).forEach(g=>z.file(g.file,g.blob));dl(await z.generateAsync({type:"blob"}),"audio.zip")}catch(e){vxMsg("ZIP oluşturulamadı, dosyaları aşağıdaki bağlantılardan tek tek indirin.")}}
+/* ---- çalma (herkese açık yol: ElevenLabs'e hiç gitmez) ---- */
+const BLOB=new Map(),SIL="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";let TTSA=null,NFCBUSY=0;
+async function getClip(c){if(BLOB.has(c.file))return BLOB.get(c.file);try{const r=await fetch(AUDIO_BASE+c.file);if(r.ok&&!/text\/html/.test(r.headers.get("content-type")||"")){const b=await r.blob();if(b.size>500){const u=URL.createObjectURL(b);BLOB.set(c.file,u);return u}}}catch(e){}return null}
+function webSay(t){return new Promise(res=>{try{const s=window.speechSynthesis;if(!s)return res();const u=new SpeechSynthesisUtterance(t);u.lang="tr-TR";u.onend=u.onerror=()=>res();s.speak(u)}catch(e){res()}})}
+function playUrl(a,u){return new Promise(res=>{a.onended=a.onerror=()=>res();a.src=u;a.play().catch(()=>res())})}
+async function nfcSpeak(m){const st=$("nxs")||$("vxm"),say=x=>{if(st){st.textContent=x;st.style.display="block"}};if(NFCBUSY)return;NFCBUSY=1;
 TTSA=TTSA||new Audio();TTSA.src=SIL;TTSA.play().catch(()=>{});
-const txt=nfcText(m),key=t.voice+"|"+txt;say("🔊 Hazırlanıyor...");
-try{let url=TTSC.get(key);if(!url){const r=await fetch(XI+"/text-to-speech/"+encodeURIComponent(t.voice)+"?output_format=mp3_44100_64",{method:"POST",headers:{"xi-api-key":XI_KEY,"content-type":"application/json"},body:JSON.stringify({text:txt,model_id:"eleven_multilingual_v2"})});if(!r.ok)throw r.status;url=URL.createObjectURL(await r.blob());TTSC.set(key,url)}
-TTSA.src=url;await TTSA.play();say("🔊 "+txt)}catch(e){say("Ses oluşturulamadı"+(e==401?" (API anahtarı geçersiz)":e==402||e==429?" (ElevenLabs kotası dolmuş olabilir)":"")+". Menü: "+txt)}}
+const clips=mealClips(m,nfcItems(m)),txt=clips.map(c=>c.text).join(" ");say("🔊 Hazırlanıyor...");
+try{const urls=await Promise.all(clips.map(getClip));say("🔊 "+txt);for(let i=0;i<clips.length;i++){if(urls[i])await playUrl(TTSA,urls[i]);else await webSay(clips[i].text)}}catch(e){say("Ses çalınamadı. Menü: "+txt)}
+NFCBUSY=0}
 let NXS="";
 function nfcRender(){const e=$("nx");if(!e||!document.body.classList.contains("nfconly"))return;const g=/[?&]ogun=([koa])/.exec(location.search),sig=["k","o"].map(m=>nfcItems(m).join("|")).join("#")+ttsCfg().voice+ttsCfg().greet;if(sig===NXS)return;NXS=sig;
 const nm={k:"🌅 Sabah Kahvaltısı",o:"☀️ Öğle Yemeği",a:"🌙 Akşam Yemeği"},ks=g?[g[1]]:["k","o","a"];
